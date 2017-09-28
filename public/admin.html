@@ -1,15 +1,15 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>TF-Queue</title>
-  <link rel="stylesheet" href="home-style.css" type="text/css"/> 
+  <title>Admin Page</title>
+  <link rel="stylesheet" href="admin-style.css" type="text/css"/>
 </head>
 <script src="/socket.io/socket.io.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 <script>
 	var Client = {};
 	Client.socket = io.connect();
-	
+
 	
 	function update(){
 		console.log("updated");
@@ -17,62 +17,57 @@
 			var list = "";
 			var name;
 			var q;
+			var id;
 			console.log(data);
 			data = JSON.parse(data);
 			console.log(data);
 			for (i = 0; i < data.length; i++){
     	  		name = data[i].name;
     	  		q = data[i].quest;
-    	  		list = list + "<p>" + (i + 1) + ". " + name + ": " + q + "<p>";
+    	  		id = data[i]._id;
+    	 // 		console.log("id number: " + id);
+    	  		list = list + '<form action="/remove" method="post">' + (i + 1) 
+    	  		+ "." + name + ": " + q  + "&nbsp &nbsp" + '<button type="submit" name="ID" value = "'
+    	  		 + id + '">Remove</button>' + '</form> <br> <br>';
     		}
 			$("#queue").html(list); //this replaces the Loading with the queue of students
 		});
 	};
-
+/*
 	$(document).ready(function () {
 	    $('form').on('submit', function(e) {
 	      	e.preventDefault();
+	      	console.log($(this));
+	        console.log("this serialized is" + $(this).serialize());
 	      	$.post($(this).attr('action'), $(this).serialize(), function(data){
-	      			console.log("i guess we went through with this?");
+	      			console.log("i guess we went through with this?")
 	      			update();
+	      		
+	      			
 	        });
 	    });
-	});
-
-	Client.socket.on("change", function(){
-		update();
-	});
+	}); 
+*/
 
 	update();
 
+	Client.socket.on("change", function(){
+		console.log("in change function");
+		update();
+	});
 
 
 </script> 
+<html>
+	<h1> Welcome to the admin Page </h1>
 
-
-<body>
-
-	<form method="post" action="/question">
-		<label>Name</label>
-          <input type = "text"
-                 name = "name"
-                 id = "name"
-                 maxlength= "20"/>
-                 
-         <label>What's your Question?</label>
-          <input type = "text"
-                 name = "question"
-                 id = "question"
-                 maxlength = "150"/>
-        <input type="submit" value="Submit"  >
-    </form>
-    <br>
-    <br>
-
-    <fieldset id="queue">
+	<fieldset id="queue">
         <p>Loading Queue...</p>
-        
-      </fieldset>
-</body>
-</html>
 
+</html>
+<!---
+clicking remove posts remove to server
+
+has to send info of WHO to remove
+
+server than deletes that person -->

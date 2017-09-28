@@ -20,13 +20,13 @@ var db = MongoClient.connect(mongoUri, function(error, databaseConnection) {
 	db = databaseConnection;
 });
 
- server.listen(5000, function(){
- 	console.log("local server running");
- });
-
- // server.listen(process.env.PORT, function(){
- // 	console.log("Heroku server running");
+ // server.listen(5000, function(){
+ // 	console.log("local server running");
  // });
+
+ server.listen(process.env.PORT, function(){
+ 	console.log("server running");
+ });
 
 
 app.use(express.static(__dirname + '/public'));
@@ -72,7 +72,7 @@ app.post("/remove", function(request, response){
 	db.collection("students", function(error, coll){
 		coll.remove({_id: ObjectId(request.body.ID)}, function(err, obj){
 			//console.log(doc);
-			response.sendFile(path.join(__dirname + "/admin.html"));
+			response.sendFile(path.join(__dirname + "/public/" + "admin.html"));
 			io.sockets.emit("change");
 		});
 	});
@@ -80,12 +80,12 @@ app.post("/remove", function(request, response){
 	
 });
 app.get("/admin", function(request, response){
-	response.sendFile(path.join(__dirname + "/admin.html"));
+	response.sendFile(path.join(__dirname + "/public/"+ "/admin.html"));
 });
 
 
 app.get('/', function(request, response) {
-	response.sendFile(path.join(__dirname + "/home.html"));
+	response.sendFile(path.join(__dirname + "/public/" +"home.html"));
 
 });
 
