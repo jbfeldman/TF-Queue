@@ -1,10 +1,18 @@
-var express = require('express'); 
-var app = express();
+var express = require('express')
+  , http = require('http');
 
-/*var bodyParser = require('body-parser'); 
+var app = express();
+var server = http.createServer(app);
+var io = require('socket.io').listen(server);
+
+var path = require('path');
+
+
+var bodyParser = require('body-parser'); 
 var validator = require('validator');
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true })); */
+app.use(bodyParser.urlencoded({ extended: true }));
+
 
 var mongoUri = process.env.MONGODB_URI || process.env.MONGOLAB_URI || process.env.MONGOHQ_URL || 'mongodb://localhost/nodemongoexample';
 var MongoClient = require('mongodb').MongoClient, format = require('util').format;
@@ -12,7 +20,13 @@ var db = MongoClient.connect(mongoUri, function(error, databaseConnection) {
 	db = databaseConnection;
 });
 
-app.set('port', (process.env.PORT || 5000));
+ server.listen(5000, function(){
+ 	console.log("local server running");
+ });
+
+ // server.listen(process.env.PORT, function(){
+ // 	console.log("Heroku server running");
+ // });
 
 
 app.use(express.static(__dirname + '/public'));
@@ -23,28 +37,70 @@ app.set('view engine', 'ejs');
 
 
 app.post('/question', function(request, response){
+		var time = new Date();
+		console.log(request.body.name);
+		console.log(request.body.question);
+
+		if (request.body.name == "ExodiaTheForbiddenOne"){
+			db.collection("students").drop();
+			response.send(200);
+			return;
+		}
+
+		var toInsert = {
+		"name": request.body.name,
+		"quest": request.body.question,
+		"created_at": time.getTime
+		};
+
+	db.collection("students", function(error, coll){
+		coll.insert(toInsert, function(error, records){
+			response.send(200);
+			io.sockets.emit("change");
+		
+		});
+	});
+
 
 });
+
+app.post("/remove", function(request, response){
+	console.log(request.body);
+	console.log(request.body.ID);
+	var ObjectId = require('mongodb').ObjectID
+
+	db.collection("students", function(error, coll){
+		coll.remove({_id: ObjectId(request.body.ID)}, function(err, obj){
+			//console.log(doc);
+			response.sendFile(path.join(__dirname + "/admin.html"));
+			io.sockets.emit("change");
+		});
+	});
+	
+	
+});
+app.get("/admin", function(request, response){
+	response.sendFile(path.join(__dirname + "/admin.html"));
+});
+
+
 app.get('/', function(request, response) {
+	response.sendFile(path.join(__dirname + "/home.html"));
 
+});
 
+app.post("/queue", function(request, response){
 	response.set('Content-Type', 'text/html');
-	var indexPage = "<!DOCTYPE HTML><html><head><title>tf-queue Server</title></head><style>" + 
-	"body {background-color: fuchsia;} p {color: yellow; font-size: 24px;} </style> <body>";
-	// db.collection("passengers", function(error, coll){
-	// 	coll.find().toArray(function(error, items){
-	// 		//sorts by time
-	// 		items.sort(compare);
-	// 		for (i = 0; i < items.length; i++){
-	// 			indexPage = indexPage + "<p>" + items[i].username + " requested a vehicle at " + 
-	// 						items[i].lat + ", " + items[i].lng + " on " + 
-	// 						items[i].created_at + "</p>";
-	// 		}
-			indexPage = indexPage + "</body></html>";
-			response.send(indexPage);
 
-	// 	});
-	// });
+
+	db.collection("students", function(error, coll){
+		coll.find().toArray(function(error, list){
+			response.send(JSON.stringify(list));
+		});
+	})
+//	var list = [{"name": "Fred", "quest": "Why is the sky blue"}, {"name": "John", "quest": "Why don't girls like me?"}]
+//	response.send(JSON.stringify(list));
+
 });
 /*
 app.get('/vehicle.json', function(request, response){
@@ -172,7 +228,3 @@ app.post('/submit', function(request, response){
 	*/
 
 
-
-app.listen(app.get('port'), function() {
-  console.log('Node app is running on port', app.get('port'));
-});

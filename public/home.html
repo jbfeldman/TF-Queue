@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>TF-Queue</title>
+  <link rel="stylesheet" href="home-style.css" type="text/css"/> 
+</head>
+<script src="/socket.io/socket.io.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+<script>
+	var Client = {};
+	Client.socket = io.connect();
+	
+	
+	function update(){
+		console.log("updated");
+		$.post("queue", function(data){
+			var list = "";
+			var name;
+			var q;
+			console.log(data);
+			data = JSON.parse(data);
+			console.log(data);
+			for (i = 0; i < data.length; i++){
+    	  		name = data[i].name;
+    	  		q = data[i].quest;
+    	  		list = list + "<p>" + (i + 1) + "." + name + " asked " + q + "<p>";
+    		}
+			$("#queue").html(list); //this replaces the Loading with the queue of students
+		});
+	};
+
+	$(document).ready(function () {
+	    $('form').on('submit', function(e) {
+	      	e.preventDefault();
+	      	console.log("this serialized is" + $(this).serialize());
+	      	$.post($(this).attr('action'), $(this).serialize(), function(data){
+	      			console.log("i guess we went through with this?");
+	      			update();
+	        });
+	    });
+	});
+
+	Client.socket.on("change", function(){
+		console.log("in change function")
+		update();
+	});
+
+	update();
+
+	// Client.socket.on("update", function(){
+	// 	update();
+	// });
+
+
+</script> 
+
+
+<body>
+
+	<form method="post" action="/question">
+		<label>Username</label>
+          <input type = "text"
+                 name = "name"
+                 id = "name"/>
+
+         <label>What's your Question</label>
+          <input type = "text"
+                 name = "question"
+                 id = "question"/>
+        <input type="submit" value="Submit"  >
+    </form>
+
+
+    <fieldset id="queue">
+        <p>Loading Queue...</p>
+        
+      </fieldset>
+</body>
+</html>
+
