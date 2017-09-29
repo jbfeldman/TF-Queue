@@ -56,7 +56,7 @@ app.get("/admin", function(request, response){
 // the correct password, it sends them to a failure screen and asks them to try
 // again
 app.post("/login", function(request, response){
-	if (request.body.pwd == "Exodia"){
+	if (request.body.pwd == "Ex0dia"){
 		response.sendFile(path.join(__dirname + "/public/" + "/admin.html"));
 	}
 	else{
