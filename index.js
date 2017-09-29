@@ -28,9 +28,6 @@ var db = MongoClient.connect(mongoUri, function(error, databaseConnection) {
 	db = databaseConnection;
 });
 
- // server.listen(5000, function(){
- // 	console.log("local server running");
- // });
 
  server.listen(process.env.PORT, function(){
  	console.log("server running");
@@ -43,13 +40,14 @@ app.use(express.static(__dirname + '/public'));
 app.set('views', __dirname + '/views');	
 app.set('view engine', 'ejs');
 
-//returns the root page when a GET request is recieved for it
+
+//returns the root page when a GET request is received for it
 app.get('/', function(request, response) {
 	response.sendFile(path.join(__dirname + "/public/" +"home.html"));
 
 });
 
-// returns a password.html, which asksfor a password to access the amdmin page
+// returns the file password.html, which asks for a password to access the admin page
 app.get("/admin", function(request, response){
 	response.sendFile(path.join(__dirname + "/public/"+ "/password.html"));
 });
@@ -66,7 +64,7 @@ app.post("/login", function(request, response){
 	}
 });
 
-//where you name and question go after you hit submit. Takes a name and question,
+// where your name and question go after you hit submit. Takes a name and question,
 // under the argument request, and uploads them to a mongoDB database
 app.post('/question', function(request, response){
 	var time = new Date();
@@ -85,8 +83,8 @@ app.post('/question', function(request, response){
 		coll.insert(toInsert, function(error, records){
 			response.sendStatus(200);
 
-			//tells the clients (both at home and on teh admin page) that there's
-			//been a change to the question list and it needs to update
+			//tells the clients (both at home.html and on the admin page) that there's
+			//been a change to the queue and it needs to update
 			io.sockets.emit("change");
 		
 		});
@@ -95,9 +93,9 @@ app.post('/question', function(request, response){
 
 });
 
-//removes a student/question from the databse/queue
-// takes as an argument "ID" under request, which contains the MongoDB Document
-// ID of the item we want to remove
+//removes a student/question from the database/queue
+// takes as an argument "ID" under request, which is the ID of the MongoDB Document
+// we want to remove
 app.post("/remove", function(request, response){
 	var ObjectId = require('mongodb').ObjectID
 
@@ -117,8 +115,6 @@ app.post("/remove", function(request, response){
 //and the time their question was submitted
 app.post("/queue", function(request, response){
 	response.set('Content-Type', 'text/html');
-
-
 	db.collection("students", function(error, coll){
 		coll.find().toArray(function(error, list){
 			response.send(JSON.stringify(list));

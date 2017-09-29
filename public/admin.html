@@ -57,11 +57,11 @@
 // response with a callback function. However, I was unable to get it work because
 // $(this).serialize() was not able to get the value of the button (the ID number)
 // Looking at the documentation (https://api.jquery.com/serialize/), I think
-//it is because serialize cannot record the information without an input field.
+// it is because serialize cannot record the information without an input field.
 // I couldn't think of a better workaround in the time alloted, so I just had the server
 // reload the page after remove is hit. The Downside: the url becomes [url]/remove
-// after you click a remove button. Although this does not affect functionality,
-// it could cause problems is the program is expanded.
+// after you click a remove button. Although this does not affect functionality significnatly,
+// it could cause problems is the program is expanded upon.
 
 /*	$(document).ready(function () {
 	    $('form').on('submit', function(e) {
