@@ -7,52 +7,63 @@
 <script src="/socket.io/socket.io.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 <script>
+	//load the queue the first time
+	update();
+
+	//sets up socket.io client
 	var Client = {};
 	Client.socket = io.connect();
 	
-	
+	//update: requests the lists of students/questions from the server,
+	// and then formats them in HTML and loads them onto the page
 	function update(){
-		console.log("updated");
 		$.post("queue", function(data){
 			var list = "";
 			var name;
 			var q;
-			console.log(data);
 			data = JSON.parse(data);
-			console.log(data);
-			for (i = 0; i < data.length; i++){
-    	  		name = data[i].name;
-    	  		q = data[i].quest;
-    	  		list = list + "<p>" + (i + 1) + ". " + name + ": " + q + "<p>";
-    		}
-			$("#queue").html(list); //this replaces the Loading with the queue of students
+
+			if (data.length == 0){
+				$("#queue").html("<h3> Queue is empty</h3>");
+			}
+			else{
+
+
+				//cycles through the array of students/questions, and formats them in html
+				for (i = 0; i < data.length; i++){
+    	  			name = data[i].name;
+    	  			q = data[i].quest;
+    	  			list = list + "<p>" + (i + 1) + ". " + name + ": " + q + "<p>";
+    			}
+    			//this replaces the "Loading..."" with the queue of students
+				$("#queue").html(list); 
+			}
 		});
 	};
 
+	//this function catches the POST of the submission form, and POSTS using
+	//Ajax to avoid redirecting to   [url]/question
 	$(document).ready(function () {
 	    $('form').on('submit', function(e) {
 	      	e.preventDefault();
-	      	$.post($(this).attr('action'), $(this).serialize(), function(data){
-	      			console.log("i guess we went through with this?");
-	      			update();
-	        });
+	      	$.post($(this).attr('action'), $(this).serialize(), function(data){});
 	    });
 	});
 
+	//if the server tells us changes are made, reload the queue
 	Client.socket.on("change", function(){
 		update();
 	});
-
-	update();
-
-
 
 </script> 
 
 
 <body>
+	<h2> Welcome! To stand in line, add your name and question </h2>
+	<br>
+	<br>
 
-	<form method="post" action="/question">
+	<form id = "form23" method="post" action="/question">
 		<label>Name</label>
           <input type = "text"
                  name = "name"

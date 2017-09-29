@@ -7,52 +7,58 @@
 <script src="/socket.io/socket.io.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 <script>
+
+	//loads the queue the first time
+	update();
+
 	var Client = {};
 	Client.socket = io.connect();
 
-	
+	//update: requests the lists of students/questions from the server,
+	// and then formats them in HTML and loads them onto the page
 	function update(){
-		console.log("updated");
 		$.post("queue", function(data){
 			var list = "";
 			var name;
 			var q;
 			var id;
-			console.log(data);
 			data = JSON.parse(data);
-			console.log(data);
-			for (i = 0; i < data.length; i++){
-    	  		name = data[i].name;
-    	  		q = data[i].quest;
-    	  		id = data[i]._id;
-    	 // 		console.log("id number: " + id);
-    	  		list = list + '<form action="/remove" method="post">' + (i + 1) 
-    	  		+ "." + name + ": " + q  + "&nbsp &nbsp" + '<button type="submit" name="ID" value = "'
-    	  		 + id + '">Remove</button>' + '</form> <br> <br>';
-    		}
-			$("#queue").html(list); //this replaces the Loading with the queue of students
+
+			if(data.length == 0){
+				$("#queue").html("<h3> Queue is empty</h3>");
+			}
+			else{
+				//cycles through the array of students/questions, formats them in HTML,
+				// including adding a button which posts "remove" the server when clicked
+				// and sends the MongoDB ID of the student/question document
+				for (i = 0; i < data.length; i++){
+    		  		name = data[i].name;
+    		  		q = data[i].quest;
+    		  		id = data[i]._id;
+    		  		list = list + '<form action="/remove" method="post">' + (i + 1) 
+    		  		+ ". " + name + ": " + q  + "&nbsp &nbsp" + '<button type="submit" name="ID" value = "'
+    		  		 + id + '">Remove</button>' + '</form> <br> <br>';
+    			}
+				$("#queue").html(list); //this replaces the Loading with the queue of students
+			}
 		});
+		
 	};
 /*
 	$(document).ready(function () {
 	    $('form').on('submit', function(e) {
 	      	e.preventDefault();
-	      	console.log($(this));
-	        console.log("this serialized is" + $(this).serialize());
 	      	$.post($(this).attr('action'), $(this).serialize(), function(data){
-	      			console.log("i guess we went through with this?")
-	      			update();
 	      		
 	      			
 	        });
 	    });
 	}); 
 */
+	
 
-	update();
-
+	//if the server tells us changes are made, reloads the queue
 	Client.socket.on("change", function(){
-		console.log("in change function");
 		update();
 	});
 
@@ -65,9 +71,3 @@
         <p>Loading Queue...</p>
 
 </html>
-<!---
-clicking remove posts remove to server
-
-has to send info of WHO to remove
-
-server than deletes that person -->
