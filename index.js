@@ -43,6 +43,28 @@ app.use(express.static(__dirname + '/public'));
 app.set('views', __dirname + '/views');	
 app.set('view engine', 'ejs');
 
+//returns the root page when a GET request is recieved for it
+app.get('/', function(request, response) {
+	response.sendFile(path.join(__dirname + "/public/" +"home.html"));
+
+});
+
+// returns a password.html, which asksfor a password to access the amdmin page
+app.get("/admin", function(request, response){
+	response.sendFile(path.join(__dirname + "/public/"+ "/password.html"));
+});
+
+//sends them to a login screen that asks for the password. If they do not enter
+// the correct password, it sends them to a failure screen and asks them to try
+// again
+app.post("/login", function(request, response){
+	if (request.body.pwd == "Exodia"){
+		response.sendFile(path.join(__dirname + "/public/" + "/admin.html"));
+	}
+	else{
+		response.send("Incorrect Password, hit back and try again")
+	}
+});
 
 //where you name and question go after you hit submit. Takes a name and question,
 // under the argument request, and uploads them to a mongoDB database
@@ -89,17 +111,6 @@ app.post("/remove", function(request, response){
 	});
 	
 	
-});
-
-// returns the admin page when a GET request is recieved for it
-app.get("/admin", function(request, response){
-	response.sendFile(path.join(__dirname + "/public/"+ "/admin.html"));
-});
-
-//returns the root page when a GET request is recieved for it
-app.get('/', function(request, response) {
-	response.sendFile(path.join(__dirname + "/public/" +"home.html"));
-
 });
 
 //returns an array of objects which contains each student, their corresponding question

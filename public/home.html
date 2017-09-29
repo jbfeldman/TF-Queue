@@ -2,10 +2,14 @@
 <html>
 <head>
   <title>TF-Queue</title>
+  <meta charset="utf-8"/>
   <link rel="stylesheet" href="home-style.css" type="text/css"/> 
 </head>
+<body>
+
 <script src="/socket.io/socket.io.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+
 <script>
 	//load the queue the first time
 	update();
@@ -58,12 +62,12 @@
 </script> 
 
 
-<body>
+
 	<h2> Welcome! To stand in line, add your name and question </h2>
 	<br>
 	<br>
 
-	<form id = "form23" method="post" action="/question">
+	<form method="post" action="/question">
 		<label>Name</label>
           <input type = "text"
                  name = "name"

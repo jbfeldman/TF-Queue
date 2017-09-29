@@ -13,7 +13,7 @@ Key Files:
 		  			It also has a name and question box so students can ask their question
 		  			and be put at the end of the queue
 
-		  admin.html: This is the page you receive after accessing [url]/admin. 
+		  admin.html:  This is the page you receive after succesfully typing the password in password.html.
 		  			This page is for the Teaching Fellows, and also displays the 
 		  			list of students like the home.html. But unlike home, it 
 		  			contains a remove button for each student so the TFs can 
@@ -29,7 +29,9 @@ Key Files:
 		  			the queue is changed, and the pages will reload their queues
 		  			accordingly
 
-		  			
-Notes: Gotta use socket to be able to communicate that you want to update the 
-	list when the instructors change him
+		  password.html:This is the page you receive after accessing [url]/admin.
+		  				Entering the correct password (Ex0dia)
+		  				will grant you access to the admin page
+
+
 

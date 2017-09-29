@@ -2,8 +2,11 @@
 <html>
 <head>
   <title>Admin Page</title>
+  <meta charset="utf-8"/>
   <link rel="stylesheet" href="admin-style.css" type="text/css"/>
 </head>
+
+<body>
 <script src="/socket.io/socket.io.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 <script>
@@ -42,10 +45,25 @@
 				$("#queue").html(list); //this replaces the Loading with the queue of students
 			}
 		});
-		
 	};
-/*
-	$(document).ready(function () {
+
+	//if the server tells us changes are made, reloads the queue
+	Client.socket.on("change", function(){
+		update();
+});
+
+//The Below commented out code was simliar to what I used in the home.html file,
+// where I caught the post request and did it through Ajax so I could handle the
+// response with a callback function. However, I was unable to get it work because
+// $(this).serialize() was not able to get the value of the button (the ID number)
+// Looking at the documentation (https://api.jquery.com/serialize/), I think
+//it is because serialize cannot record the information without an input field.
+// I couldn't think of a better workaround in the time alloted, so I just had the server
+// reload the page after remove is hit. The Downside: the url becomes [url]/remove
+// after you click a remove button. Although this does not affect functionality,
+// it could cause problems is the program is expanded.
+
+/*	$(document).ready(function () {
 	    $('form').on('submit', function(e) {
 	      	e.preventDefault();
 	      	$.post($(this).attr('action'), $(this).serialize(), function(data){
@@ -56,18 +74,13 @@
 	}); 
 */
 	
-
-	//if the server tells us changes are made, reloads the queue
-	Client.socket.on("change", function(){
-		update();
-	});
-
-
 </script> 
-<html>
+
+
 	<h1> Welcome to the admin Page </h1>
 
 	<fieldset id="queue">
         <p>Loading Queue...</p>
-
+     </fieldset>
+</body>
 </html>
